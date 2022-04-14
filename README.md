@@ -1,5 +1,5 @@
 # GsyncSwitch
-Simple Windows App to switch G-Sync with one click in taskbar
+Simple Windows App to switch G-Sync on/off with one click in taskbar
 
 To compile GsyncSwitchEXE project, you need NVAPI (not included for copyright purpose) available here :
 https://developer.nvidia.com/nvapi
