@@ -12,8 +12,8 @@ Or use right click for menu :
 ----------------------------------------------------------------------------------------------------------------------------                                                                                                              
 If you want to build the projects yourself :
 
-GsyncSwitchEXE : C++ project to make an exe to switch Gsync (using NVAPI)
-GsyncSwitch : C# project for the simple app in taskbar (it has GsyncSwitchEXE.exe in it, so you need to change it for x86 for example)
+- GsyncSwitchEXE : C++ project to make an exe to switch Gsync (using NVAPI)
+- GsyncSwitch : C# project for the simple app in taskbar (it has GsyncSwitchEXE.exe in it, so you need to change it for x86 for example)
 
 To compile GsyncSwitchEXE project, you need NVAPI (not included for copyright purpose) available here :
 https://developer.nvidia.com/nvapi
