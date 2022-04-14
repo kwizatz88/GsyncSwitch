@@ -10,6 +10,8 @@ Or use right click for menu :
 ![image](https://user-images.githubusercontent.com/71530061/163377584-97295168-ca3b-4516-adb2-c59f8e1bb86b.png)
 
 
+
+
 If you want to build the projects yourself :
 
 GsyncSwitchEXE : C++ project to make an exe to switch Gsync (using NVAPI)
