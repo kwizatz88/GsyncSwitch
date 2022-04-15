@@ -7,7 +7,7 @@ To switch Gsync mode, just double click on icon in taskbar :
 ![image](https://user-images.githubusercontent.com/71530061/163377488-4f60ebdc-3005-47ec-89d9-f47d475a3db5.png)
 
 Or use right click for menu :
-![image](https://user-images.githubusercontent.com/71530061/163563159-6598beff-7d8c-4213-ba54-deab5db6b96b.png)
+![image](https://user-images.githubusercontent.com/71530061/163563377-569ec630-a67e-4d23-9330-11b757626d89.png)
 
 ----------------------------------------------------------------------------------------------------------------------------                                                                                                              
 If you want to build the projects yourself :
