@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using WindowsInput;
 using WindowsInput.Native;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace GsyncSwitch
 {
@@ -157,6 +158,7 @@ namespace GsyncSwitch
 
         private void SwitchGsync(object sender, EventArgs e)
         {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             Process gsyncSwitchEXE = new Process();
             gsyncSwitchEXE.StartInfo.FileName = "GsyncSwitchEXE.exe";
             //            gsyncSwitchEXE.StartInfo.Arguments = "DemoText";
