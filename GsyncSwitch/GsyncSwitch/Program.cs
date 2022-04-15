@@ -7,11 +7,15 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Drawing;
 using Microsoft.Win32;
+using WindowsInput;
+using WindowsInput.Native;
+using System.Runtime.InteropServices;
 
 namespace GsyncSwitch
 {
     class ControlContainer : IContainer
     {
+
         ComponentCollection _components;
 
         public ControlContainer()
@@ -43,6 +47,9 @@ namespace GsyncSwitch
         [STAThread]
         static void Main()
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             IconClass sc = new IconClass();
 //            sc.notifyIcon1.ShowBalloonTip(1000);
 
@@ -56,6 +63,7 @@ namespace GsyncSwitch
         public NotifyIcon notifyIcon1;
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem switchGsync;
+        private ToolStripMenuItem switchHDR;
         private ToolStripMenuItem exitApplication;
         private ToolStripMenuItem launchAtStartup;
 
@@ -76,16 +84,26 @@ namespace GsyncSwitch
 
             contextMenu = new ContextMenuStrip();
             switchGsync = new ToolStripMenuItem();
+            switchHDR = new ToolStripMenuItem();
             exitApplication = new ToolStripMenuItem();
             launchAtStartup = new ToolStripMenuItem();
+
+            contextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+//            contextMenu.Renderer = new KwizatZMenuRenderer();
 
             this.notifyIcon1.ContextMenuStrip = contextMenu;
 
             this.notifyIcon1.DoubleClick += NotifyIcon_DoubleClick;
 
             switchGsync.Text = "Switch Gsync";
+            switchGsync.Image = GsyncSwitch.Properties.Resources.nvidia_logo ;  
             switchGsync.Click += new EventHandler(SwitchGsync_Click);
             contextMenu.Items.Add(switchGsync);
+
+            switchHDR.Text = "Switch HDR";
+            switchHDR.Image = GsyncSwitch.Properties.Resources.hdr;
+            switchHDR.Click += new EventHandler(SwitchHDR_Click);
+            contextMenu.Items.Add(switchHDR);
 
             exitApplication.Text = "Exit..";
             exitApplication.Click += new EventHandler(ExitApplication_Click);
@@ -106,6 +124,12 @@ namespace GsyncSwitch
             launchAtStartup.Click += new EventHandler(LaunchAtStartup_Click);
             contextMenu.Items.Add(launchAtStartup);
 
+        }
+
+        private void SwitchHDR_Click(object sender, EventArgs e)
+        {
+            var simu = new InputSimulator();
+            simu.Keyboard.ModifiedKeyStroke(new[] { VirtualKeyCode.LWIN, VirtualKeyCode.LMENU }, VirtualKeyCode.VK_B);
         }
 
         private void LaunchAtStartup_Click(object sender, EventArgs e)
