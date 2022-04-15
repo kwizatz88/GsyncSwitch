@@ -1,5 +1,5 @@
 # GsyncSwitch
-Simple Windows App to switch G-Sync on/off with one click in taskbar
+Simple Windows App to switch G-Sync and HDR on/off with one click in taskbar
 
 If you take the release (here on the right), put the 2 files in the same folder and launch GsyncSitch.exe for toolbar app or GsyncSitchEXE.exe to switch directly Gsync mode
 
@@ -18,3 +18,5 @@ If you want to build the projects yourself :
 To compile GsyncSwitchEXE project, you need NVAPI (not included for copyright purpose) available here :
 https://developer.nvidia.com/nvapi
 
+
+V1.1 : added HDR switch
