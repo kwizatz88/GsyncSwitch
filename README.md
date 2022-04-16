@@ -19,4 +19,4 @@ To compile GsyncSwitchEXE project, you need NVAPI (not included for copyright pu
 https://developer.nvidia.com/nvapi
 
 
-V1.1 : added HDR switch
+V1.1 : added HDR switch (at least for W11, not sur if shortcut win+alt+b works in W10 now : app just send shortcut)
