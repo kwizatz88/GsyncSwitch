@@ -65,6 +65,12 @@ namespace GsyncSwitch
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem switchGsync;
         private ToolStripMenuItem switchHDR;
+        private ToolStripMenuItem to144Hz;
+        private ToolStripMenuItem to120Hz;
+        private ToolStripMenuItem monitorQN95B;
+        private ToolStripMenuItem monitorQN95A;
+        private ToolStripMenuItem monitorClone;
+        private ToolStripMenuItem monitorExtend;
         private ToolStripMenuItem exitApplication;
         private ToolStripMenuItem launchAtStartup;
 
@@ -86,6 +92,12 @@ namespace GsyncSwitch
             contextMenu = new ContextMenuStrip();
             switchGsync = new ToolStripMenuItem();
             switchHDR = new ToolStripMenuItem();
+            to120Hz = new ToolStripMenuItem();
+            to144Hz = new ToolStripMenuItem();
+            monitorQN95B = new ToolStripMenuItem();
+            monitorQN95A = new ToolStripMenuItem();
+            monitorClone = new ToolStripMenuItem();
+            monitorExtend = new ToolStripMenuItem();         
             exitApplication = new ToolStripMenuItem();
             launchAtStartup = new ToolStripMenuItem();
 
@@ -106,6 +118,30 @@ namespace GsyncSwitch
             switchHDR.Click += new EventHandler(SwitchHDR_Click);
             contextMenu.Items.Add(switchHDR);
 
+            to144Hz.Text = "To 144 Hz";
+            to144Hz.Click += new EventHandler(To144Hz_Click);
+            contextMenu.Items.Add(to144Hz);
+
+            to120Hz.Text = "To 120 Hz";
+            to120Hz.Click += new EventHandler(To120Hz_Click);
+            contextMenu.Items.Add(to120Hz);
+
+            monitorQN95B.Text = "Monitor QN95B";
+            monitorQN95B.Click += new EventHandler(MonitorQN95B_Click);
+            contextMenu.Items.Add(monitorQN95B);
+
+            monitorQN95A.Text = "Monitor QN95A";
+            monitorQN95A.Click += new EventHandler(MonitorQN95A_Click);
+            contextMenu.Items.Add(monitorQN95A);
+
+            monitorClone.Text = "Monitor Clone";
+            monitorClone.Click += new EventHandler(MonitorClone_Click);
+            contextMenu.Items.Add(monitorClone);
+
+            monitorExtend.Text = "Monitor Extend";
+            monitorExtend.Click += new EventHandler(MonitorExtend_Click);
+            contextMenu.Items.Add(monitorExtend);
+
             exitApplication.Text = "Exit..";
             exitApplication.Click += new EventHandler(ExitApplication_Click);
             contextMenu.Items.Add(exitApplication);
@@ -125,6 +161,44 @@ namespace GsyncSwitch
             launchAtStartup.Click += new EventHandler(LaunchAtStartup_Click);
             contextMenu.Items.Add(launchAtStartup);
 
+        }
+
+        private void MonitorExtend_Click(object sender, EventArgs e)
+        {
+            MonitorSwitch.ExtendDisplays();
+        }
+
+        private void MonitorClone_Click(object sender, EventArgs e)
+        {
+            MonitorSwitch.CloneDisplays();
+        }
+
+        private void MonitorQN95A_Click(object sender, EventArgs e)
+        {
+            MonitorSwitch.InternalDisplay();
+        }
+
+        private void MonitorQN95B_Click(object sender, EventArgs e)
+        {
+            MonitorSwitch.ExternalDisplay();
+        }
+
+        private void To120Hz_Click(object sender, EventArgs e)
+        {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            Process nircmdEXE = new Process();
+            nircmdEXE.StartInfo.FileName = "nircmd.exe";
+            nircmdEXE.StartInfo.Arguments = "setdisplay 3840 2160 32 120";
+            nircmdEXE.Start();
+        }
+
+        private void To144Hz_Click(object sender, EventArgs e)
+        {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            Process nircmdEXE = new Process();
+            nircmdEXE.StartInfo.FileName = "nircmd.exe";
+            nircmdEXE.StartInfo.Arguments = "setdisplay 3840 2160 32 144";
+            nircmdEXE.Start();
         }
 
         private void SwitchHDR_Click(object sender, EventArgs e)
