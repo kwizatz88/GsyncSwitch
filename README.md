@@ -23,3 +23,5 @@ V1.1 : added HDR switch (at least for W11, not sure if shortcut win+alt+b works 
 
 v1.3 : added creator info so W11 antivirus doesn't get crazy for no reason + personal needs in bar :
 ![2022-04-22 (4)](https://user-images.githubusercontent.com/71530061/164769211-2000029d-de27-4ad6-9f55-99b7a283f45d.png)
+
+v1.4 : added quick shortcut to sound control in menu
