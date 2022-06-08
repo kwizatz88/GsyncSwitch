@@ -63,6 +63,16 @@ namespace GsyncSwitch.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap control_volume_blue {
+            get {
+                object obj = ResourceManager.GetObject("control_volume_blue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap hdr {
             get {
                 object obj = ResourceManager.GetObject("hdr", resourceCulture);

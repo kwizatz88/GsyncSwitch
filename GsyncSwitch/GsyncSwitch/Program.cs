@@ -11,6 +11,9 @@ using WindowsInput;
 using WindowsInput.Native;
 using System.Runtime.InteropServices;
 using System.IO;
+using NAudio.CoreAudioApi;
+using NAudio.CoreAudioApi.Interfaces;
+using NAudio.Wave;
 
 namespace GsyncSwitch
 {
@@ -49,6 +52,7 @@ namespace GsyncSwitch
         static void Main()
         {
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
 
             IconClass sc = new IconClass();
@@ -71,14 +75,255 @@ namespace GsyncSwitch
         private ToolStripMenuItem monitorQN95A;
         private ToolStripMenuItem monitorClone;
         private ToolStripMenuItem monitorExtend;
+        private ToolStripMenuItem speakerStatus;
         private ToolStripMenuItem exitApplication;
         private ToolStripMenuItem launchAtStartup;
+        private Color defaultSpeakerStatusColor;
+
+        const string fileNameDAHTwaveFormat = "dolbyAtmosDefaultWaveFormat.dat";
 
         // The path to the key where Windows looks for startup applications
         public RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
+        private void setFormatToDolbyAtmosForHomeTheater(MMDevice currentDevice)
+        {
+            WaveFormat waveFormat = null;
+            
+            using (var stream = File.Open(fileNameDAHTwaveFormat, FileMode.Open))
+            {
+                if(stream != null)
+                {
+                    using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
+                    {
+                        waveFormat = new WaveFormat(reader);
+                    }
+                }
+            }
+
+            if(waveFormat != null)
+            {
+                PropVariant p = new PropVariant();
+
+                IntPtr formatPointer = Marshal.AllocHGlobal(Marshal.SizeOf(waveFormat));
+                Marshal.StructureToPtr(waveFormat, formatPointer, false);
+                p.pointerValue = formatPointer;
+
+                currentDevice.GetPropertyInformation(StorageAccessMode.ReadWrite);
+                currentDevice.Properties.SetValue(PropertyKeys.PKEY_AudioEngine_DeviceFormat, p);
+            }
+        }
+
+        private string getSpeakerStatus()
+        {
+
+            string audioSpeakersValue = "N/A";
+            var deviceEnum = new MMDeviceEnumerator();
+            MMDevice currentDevice = deviceEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+
+            WaveFormat waveFormat =null;
+
+            if (currentDevice.Properties.Contains(PropertyKeys.PKEY_AudioEngine_DeviceFormat))
+            {
+                var value = currentDevice.Properties[PropertyKeys.PKEY_AudioEngine_DeviceFormat].Value as byte[];
+
+                IntPtr unmanagedPointer = Marshal.AllocHGlobal(value.Length);
+                Marshal.Copy(value, 0, unmanagedPointer, value.Length);
+                Marshal.FreeHGlobal(unmanagedPointer);
+                waveFormat = WaveFormat.MarshalFromPtr(unmanagedPointer);
+
+                audioSpeakersValue = waveFormat.SampleRate.ToString() + "Hz " + waveFormat.Channels.ToString() + " channels " + waveFormat.BitsPerSample.ToString() + " bits";
+            }
+
+            // special for my sound card, if Dolby Atmos for Home Theater isn't used
+            if (currentDevice.FriendlyName.Contains("EP-HDMI")&&waveFormat!=null)
+            {
+                if (waveFormat.Channels < 8)
+                {
+                    if (speakerStatus.ForeColor != null && !speakerStatus.ForeColor.Equals(Color.Red))
+                    {
+                        defaultSpeakerStatusColor = speakerStatus.ForeColor ;
+                    }
+                    speakerStatus.ForeColor = Color.Red;
+//                    setFormatToDolbyAtmosForHomeTheater(currentDevice);
+                }
+                else
+                {
+                    speakerStatus.ForeColor = defaultSpeakerStatusColor;
+
+                    //write defaut DolbyAmtosForHomeTheater default waveFormat in a file, so we can set it back if not selected
+                    //commented : doesn't work
+                    /*
+                    if (!File.Exists(fileNameDAHTwaveFormat))
+                    {
+                        using (var stream = File.Open(fileNameDAHTwaveFormat, FileMode.Create))
+                        {
+                            using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))
+                            {
+                                waveFormat.Serialize(writer);
+                            }
+                        }
+                    }
+                    */
+                }
+            }else if (speakerStatus.ForeColor != null && speakerStatus.ForeColor.Equals(Color.Red))
+            {
+                speakerStatus.ForeColor = defaultSpeakerStatusColor;
+            }
+
+
+                /*
+                            var devices = deviceEnum.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+                            foreach (MMDevice device in devices)
+                            {
+
+                                if (device.FriendlyName.Contains("EP-HDMI"))
+                                {
+
+                                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEngine_DeviceFormat))
+                                    {
+                                        var value = device.Properties[PropertyKeys.PKEY_AudioEngine_DeviceFormat].Value as byte[];
+
+                                        IntPtr unmanagedPointer = Marshal.AllocHGlobal(value.Length);
+                                        Marshal.Copy(value, 0, unmanagedPointer, value.Length);
+                                        Marshal.FreeHGlobal(unmanagedPointer);
+                                        var waveFormat = WaveFormat.MarshalFromPtr(unmanagedPointer);
+
+                                        audioSpeakersValue = waveFormat.SampleRate.ToString() +"Hz "+waveFormat.Channels.ToString() +" channels " +waveFormat.BitsPerSample.ToString()+ " bits";
+                                    }
+                                }
+                            }
+                */
+
+                return audioSpeakersValue;
+        }
+
+
+        private void debugSpeakerStatus()
+        {
+            var deviceEnum = new MMDeviceEnumerator();
+            var devices = deviceEnum.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active);
+            foreach (MMDevice device in devices)
+            {
+                System.Diagnostics.Debug.WriteLine("device.FriendlyName: " + device.FriendlyName.ToString());
+                System.Diagnostics.Debug.WriteLine("device.State: "+ device.State.ToString());
+                System.Diagnostics.Debug.WriteLine("device.AudioClient: " + device.AudioClient.ToString());
+
+
+                if (device.FriendlyName.Contains("EP-HDMI"))
+                {
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_Association))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_Association] ;
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_Association: "+value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_ControlPanelPageProvider))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_ControlPanelPageProvider];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_ControlPanelPageProvider: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_Disable_SysFx))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_Disable_SysFx];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_Disable_SysFx: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_FormFactor))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_FormFactor];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_FormFactor: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_FullRangeSpeakers))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_FullRangeSpeakers];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_FullRangeSpeakers: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_GUID))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_GUID];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_GUID: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_JackSubType))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_JackSubType];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_JackSubType: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_PhysicalSpeakers))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_PhysicalSpeakers];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_PhysicalSpeakers: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEndpoint_Supports_EventDriven_Mode))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEndpoint_Supports_EventDriven_Mode];
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEndpoint_Supports_EventDriven_Mode: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEngine_DeviceFormat))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEngine_DeviceFormat].Value as byte[];
+
+                        IntPtr unmanagedPointer = Marshal.AllocHGlobal(value.Length);
+                        Marshal.Copy(value, 0, unmanagedPointer, value.Length);
+                        Marshal.FreeHGlobal(unmanagedPointer);
+                        var waveFormat = WaveFormat.MarshalFromPtr(unmanagedPointer);
+
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEngine_DeviceFormat: " + waveFormat.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_AudioEngine_OEMFormat))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_AudioEngine_OEMFormat].Value as byte[];
+
+                        IntPtr unmanagedPointer = Marshal.AllocHGlobal(value.Length);
+                        Marshal.Copy(value, 0, unmanagedPointer, value.Length);
+                        Marshal.FreeHGlobal(unmanagedPointer);
+                        var waveFormat = WaveFormat.MarshalFromPtr(unmanagedPointer);
+
+                        System.Diagnostics.Debug.WriteLine("PKEY_AudioEngine_OEMFormat: " + waveFormat.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_DeviceInterface_FriendlyName))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_DeviceInterface_FriendlyName];
+                        System.Diagnostics.Debug.WriteLine("PKEY_DeviceInterface_FriendlyName: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_Device_ControllerDeviceId))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_Device_ControllerDeviceId];
+                        System.Diagnostics.Debug.WriteLine("PKEY_Device_ControllerDeviceId: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_Device_DeviceDesc))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_Device_DeviceDesc];
+                        System.Diagnostics.Debug.WriteLine("PKEY_Device_DeviceDesc: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_Device_FriendlyName))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_Device_FriendlyName];
+                        System.Diagnostics.Debug.WriteLine("PKEY_Device_FriendlyName: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_Device_IconPath))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_Device_IconPath];
+                        System.Diagnostics.Debug.WriteLine("PKEY_Device_IconPath: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_Device_InstanceId))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_Device_InstanceId];
+                        System.Diagnostics.Debug.WriteLine("PKEY_Device_InstanceId: " + value.Value.ToString());
+                    }
+                    if (device.Properties.Contains(PropertyKeys.PKEY_Device_InterfaceKey))
+                    {
+                        var value = device.Properties[PropertyKeys.PKEY_Device_InterfaceKey];
+                        System.Diagnostics.Debug.WriteLine("PKEY_Device_InterfaceKey: " + value.Value.ToString());
+                    }
+
+                }
+
+            }
+
+        }
+
         public IconClass()
         {
+//            debugSpeakerStatus();
+
             this.notifyIcon1 = new NotifyIcon(container);
             this.notifyIcon1.Icon = new Icon(this.GetType(), "Letter_G.ico");
             this.notifyIcon1.Text = "Gsync Switch by KwizatZ";
@@ -97,7 +342,8 @@ namespace GsyncSwitch
             monitorQN95B = new ToolStripMenuItem();
             monitorQN95A = new ToolStripMenuItem();
             monitorClone = new ToolStripMenuItem();
-            monitorExtend = new ToolStripMenuItem();         
+            monitorExtend = new ToolStripMenuItem();
+            speakerStatus = new ToolStripMenuItem();
             exitApplication = new ToolStripMenuItem();
             launchAtStartup = new ToolStripMenuItem();
 
@@ -107,6 +353,7 @@ namespace GsyncSwitch
             this.notifyIcon1.ContextMenuStrip = contextMenu;
 
             this.notifyIcon1.DoubleClick += NotifyIcon_DoubleClick;
+            this.notifyIcon1.Click += NotifyIcon_Click;
 
             switchGsync.Text = "Switch Gsync";
             switchGsync.Image = GsyncSwitch.Properties.Resources.nvidia_logo ;  
@@ -118,6 +365,16 @@ namespace GsyncSwitch
             switchHDR.Click += new EventHandler(SwitchHDR_Click);
             contextMenu.Items.Add(switchHDR);
 
+            contextMenu.Items.Add(new ToolStripSeparator());
+
+            speakerStatus.Text = "Speaker status : " + getSpeakerStatus();
+            speakerStatus.Image = GsyncSwitch.Properties.Resources.control_volume_blue;
+            speakerStatus.Click += new EventHandler(SpeakerStatus_Click);
+            contextMenu.Items.Add(speakerStatus);
+
+
+            contextMenu.Items.Add(new ToolStripSeparator());
+
             to144Hz.Text = "To 144 Hz";
             to144Hz.Click += new EventHandler(To144Hz_Click);
             contextMenu.Items.Add(to144Hz);
@@ -125,6 +382,8 @@ namespace GsyncSwitch
             to120Hz.Text = "To 120 Hz";
             to120Hz.Click += new EventHandler(To120Hz_Click);
             contextMenu.Items.Add(to120Hz);
+
+            contextMenu.Items.Add(new ToolStripSeparator());
 
             monitorQN95B.Text = "Monitor QN95B";
             monitorQN95B.Click += new EventHandler(MonitorQN95B_Click);
@@ -141,6 +400,8 @@ namespace GsyncSwitch
             monitorExtend.Text = "Monitor Extend";
             monitorExtend.Click += new EventHandler(MonitorExtend_Click);
             contextMenu.Items.Add(monitorExtend);
+
+            contextMenu.Items.Add(new ToolStripSeparator());
 
             exitApplication.Text = "Exit..";
             exitApplication.Click += new EventHandler(ExitApplication_Click);
@@ -161,6 +422,11 @@ namespace GsyncSwitch
             launchAtStartup.Click += new EventHandler(LaunchAtStartup_Click);
             contextMenu.Items.Add(launchAtStartup);
 
+        }
+
+        private void NotifyIcon_Click(object sender, EventArgs e)
+        {
+            speakerStatus.Text = "Speaker status : " + getSpeakerStatus();
         }
 
         private void MonitorExtend_Click(object sender, EventArgs e)
@@ -222,6 +488,13 @@ namespace GsyncSwitch
                 launchAtStartup.Checked = false;
             }
         }
+
+
+        private void SpeakerStatus_Click(object sender, EventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("control", "mmsys.cpl sounds"));
+        }
+
 
         private void ExitApplication_Click(object sender, EventArgs e)
         {
