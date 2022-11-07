@@ -27,6 +27,7 @@ v1.4 : added quick shortcut to sound control in menu
 
 v2.0 : migrated app to .NET6.0, cause previous version couldn't access advanced sound settings
 release also contains .NET6.0 framework, so there are more files, the one to launch is still GsyncSwitch.exe
+
 .NET Desktop Runtime 6.0.10 needed :
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0 
 
