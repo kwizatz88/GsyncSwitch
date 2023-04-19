@@ -33,3 +33,8 @@ https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 also added sound control info :
 ![Capture d’écran 2022-06-08 094926](https://user-images.githubusercontent.com/71530061/172562388-3d66311c-6547-4a5b-bbd0-5d260276441b.png)
 
+v3.0 : removed the  exe call to switch Gsync
+now all the NVAPI calls are made throught CPP linked with dll : this will permit to add multiple others NVAPI calls
+new one is current Gsync state, shown in label :
+![2023-04-19](https://user-images.githubusercontent.com/71530061/233081007-6b3bdaf0-e4d3-4d29-8497-7efe9540e6ab.png)
+
