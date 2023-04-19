@@ -40,3 +40,6 @@ now all the NVAPI calls are made throught CPP linked with dll : this will allow 
 new one is current Gsync state, shown in label :
 ![2023-04-19](https://user-images.githubusercontent.com/71530061/233081007-6b3bdaf0-e4d3-4d29-8497-7efe9540e6ab.png)
 
+v3.0.1 : replaced the annoying Gsync state label by icon color : red = OFF, green = ON
+![Capture d’écran 2023-04-19 203808](https://user-images.githubusercontent.com/71530061/233169377-33200148-4f22-4ef7-ad66-e565785f182c.png)
+![Capture d’écran 2023-04-19 203838](https://user-images.githubusercontent.com/71530061/233169431-67fb912e-ec80-4e62-b419-846ebbc0ebb0.png)
