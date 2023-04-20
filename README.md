@@ -45,3 +45,8 @@ new one is current Gsync state, shown in label :
 v3.0.1 : replaced the annoying Gsync state label by icon color : red = OFF, green = ON
 ![Capture d’écran 2023-04-19 203808](https://user-images.githubusercontent.com/71530061/233169377-33200148-4f22-4ef7-ad66-e565785f182c.png)
 ![Capture d’écran 2023-04-19 203838](https://user-images.githubusercontent.com/71530061/233169431-67fb912e-ec80-4e62-b419-846ebbc0ebb0.png)
+
+v3.1 : Updated HDR switch by using NVAPI instead of Win11 shortcut
+Also get the HDR state via NVAPI to change the HDR icon in the app depending on the state (green = HDR on, black = off)
+Fixed some app memory by forcing the GC to free memory on right click
+Added the nircmd.exe file in release for refresh rate switch (forgot to put it back in prev releases)
