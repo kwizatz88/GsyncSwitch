@@ -1,13 +1,15 @@
 # GsyncSwitch
 Simple Windows App to switch G-Sync or HDR on/off with one click in taskbar
 
-If you take the release (here on the right), put the 2 files in the same folder and launch GsyncSitch.exe for toolbar app or GsyncSitchEXE.exe to switch directly Gsync mode
+If you take the release (here on the right), just put the files in the same folder and launch GsyncSitch.exe for toolbar app
 
 To switch Gsync mode, just double click on icon in taskbar :
 ![image](https://user-images.githubusercontent.com/71530061/163377488-4f60ebdc-3005-47ec-89d9-f47d475a3db5.png)
 
 Or use right click for menu :
 ![image](https://user-images.githubusercontent.com/71530061/163563377-569ec630-a67e-4d23-9330-11b757626d89.png)
+
+Note : as a gamer I don't want an app using resources on background, so the app does nothing unless you click on it (no timed status update nor stuff like that)
 
 ----------------------------------------------------------------------------------------------------------------------------                                                                                                              
 If you want to build the projects yourself :
