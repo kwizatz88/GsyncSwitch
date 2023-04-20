@@ -38,9 +38,6 @@
     <EmbeddedResource Include="Letter_G.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GsyncSwitchEXE.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="hdr.png" />
     <Content Include="nvidia_logo.png" />
   </ItemGroup>

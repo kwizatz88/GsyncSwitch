@@ -70,11 +70,15 @@ namespace GsyncSwitch
         const string GsyncSwitchNVAPI_DLL = @"GsyncSwitchNVAPI.dll";
 
         [DllImport(GsyncSwitchNVAPI_DLL, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.BStr)]
-        public static extern string NVAPIWrapperSwitchGsync(bool doSwitch);
+        public static extern int NVAPIWrapperSwitchGsync(bool doSwitch);
+
+        [DllImport(GsyncSwitchNVAPI_DLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int NVAPIWrapperSwitchHDR(bool doSwitch);
 
 
-        public string newGsyncStatus = "";
+        public int newGsyncStatus = 0;
+        public int newHDRStatus = 0;
+
         ControlContainer container = new ControlContainer();
         public NotifyIcon notifyIcon1;
         private ContextMenuStrip contextMenu;
@@ -336,6 +340,7 @@ namespace GsyncSwitch
             //            debugSpeakerStatus();
 
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
 
             this.notifyIcon1 = new NotifyIcon(container);
             this.notifyIcon1.Icon = new Icon(this.GetType(), "Letter_G.ico");
@@ -368,13 +373,21 @@ namespace GsyncSwitch
             this.notifyIcon1.DoubleClick += NotifyIcon_DoubleClick;
             this.notifyIcon1.Click += NotifyIcon_Click;
 
-            switchGsync.Text = "Switch Gsync ("+ newGsyncStatus+")";
-            switchGsync.Image = GsyncSwitch.Properties.Resources.nvidia_logo ;  
+            switchGsync.Text = "Switch Gsync";
+            if(newGsyncStatus==1)
+                switchGsync.Image = GsyncSwitch.Properties.Resources.nvidia_logo ;  
+            else
+                switchGsync.Image = GsyncSwitch.Properties.Resources.nvidia_logo_off;
             switchGsync.Click += new EventHandler(SwitchGsync_Click);
             contextMenu.Items.Add(switchGsync);
 
             switchHDR.Text = "Switch HDR";
-            switchHDR.Image = GsyncSwitch.Properties.Resources.hdr;
+            if (newHDRStatus==1)
+                switchHDR.Image = GsyncSwitch.Properties.Resources.hdr_on;
+            else
+                switchHDR.Image = GsyncSwitch.Properties.Resources.hdr;
+
+            switchHDR.Image = GsyncSwitch.Properties.Resources.hdr_on;
             switchHDR.Click += new EventHandler(SwitchHDR_Click);
             contextMenu.Items.Add(switchHDR);
 
@@ -439,8 +452,22 @@ namespace GsyncSwitch
 
         private void NotifyIcon_Click(object sender, EventArgs e)
         {
+            newGsyncStatus = NVAPIWrapperSwitchGsync(false);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
+
             speakerStatus.Text = "Speaker status : " + getSpeakerStatus();
-            switchGsync.Text = "Switch Gsync (" + newGsyncStatus + ")";
+            if (newGsyncStatus==1)
+                switchGsync.Image = GsyncSwitch.Properties.Resources.nvidia_logo;
+            else
+                switchGsync.Image = GsyncSwitch.Properties.Resources.nvidia_logo_off;
+            if (newHDRStatus==1)
+                switchHDR.Image = GsyncSwitch.Properties.Resources.hdr_on;
+            else
+                switchHDR.Image = GsyncSwitch.Properties.Resources.hdr;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
         }
 
         private void MonitorExtend_Click(object sender, EventArgs e)
@@ -483,8 +510,11 @@ namespace GsyncSwitch
 
         private void SwitchHDR_Click(object sender, EventArgs e)
         {
+/*
             var simu = new InputSimulator();
             simu.Keyboard.ModifiedKeyStroke(new[] { VirtualKeyCode.LWIN, VirtualKeyCode.LMENU }, VirtualKeyCode.VK_B);
+*/
+            newHDRStatus = NVAPIWrapperSwitchHDR(true);
         }
 
         private void LaunchAtStartup_Click(object sender, EventArgs e)

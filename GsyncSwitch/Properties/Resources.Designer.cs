@@ -79,13 +79,31 @@ namespace GsyncSwitch.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
+
+        internal static System.Drawing.Bitmap hdr_on
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("hdr_on", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap nvidia_logo {
             get {
                 object obj = ResourceManager.GetObject("nvidia_logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        internal static System.Drawing.Bitmap nvidia_logo_off
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("nvidia_logo_off", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
