@@ -23,9 +23,9 @@ void PrintError2(NvAPI_Status status)
 
 
 extern "C" {
-	GsyncSwitchNVAPIWrapper BSTR NVAPIWrapperSwitchGsync(bool doSwitch) {
+	GsyncSwitchNVAPIWrapper int NVAPIWrapperSwitchGsync(bool doSwitch) {
         
-        BSTR result = SysAllocString(L""); 
+        int result = 0; 
 
         NvAPI_Status status;
         // (0) Initialize NVAPI. This must be done first of all
@@ -67,16 +67,16 @@ extern "C" {
 
         if (drsSetting.u32CurrentValue == VRR_MODE_DISABLED) {
             if(doSwitch)
-                result = SysAllocString(L"current state : ON");
+                result = 1;
             else
-                result = SysAllocString(L"current state : OFF");
+                result = 0;
             drsSetting.u32CurrentValue = VRR_MODE_DEFAULT;
         }
         else {
             if (doSwitch)
-                result = SysAllocString(L"current state : OFF");
+                result = 0;
             else
-                result = SysAllocString(L"current state : ON");
+                result = 1;
             drsSetting.u32CurrentValue = VRR_MODE_DISABLED;
         }
 
@@ -93,9 +93,122 @@ extern "C" {
         // (6) We clean up. This is analogous to doing a free()
         NvAPI_DRS_DestroySession(hSession);
         hSession = 0;
-        
+        NvAPI_Unload();
+
+        // Free the memory allocated for result
+
         return result;
 
 	}
+
+    GsyncSwitchNVAPIWrapper int NVAPIWrapperSwitchHDR(bool doSwitch) {
+
+        int result = 0;
+
+        NvAPI_Status status = NvAPI_Initialize();
+        if (status != NVAPI_OK)
+            PrintError2(status);
+
+        NvU32 gpuCount = 0;
+        NvPhysicalGpuHandle ahGPU[NVAPI_MAX_PHYSICAL_GPUS] = {};
+
+        status = NvAPI_EnumPhysicalGPUs(ahGPU, &gpuCount);
+        if (status != NVAPI_OK)
+            PrintError2(status);
+
+        for (NvU32 i = 0; i < gpuCount; ++i)
+        {
+            NvU32 displayIdCount = 16;
+            NvU32 flags = 0;
+            NV_GPU_DISPLAYIDS displayIdArray[16] = {};
+            displayIdArray[0].version = NV_GPU_DISPLAYIDS_VER;
+
+            // Query list of displays connected to this GPU
+            status = NvAPI_GPU_GetConnectedDisplayIds(ahGPU[i], displayIdArray,
+                &displayIdCount, flags);
+
+            if ((status != NVAPI_OK) || (displayIdCount == 0))
+            {
+                PrintError2(status);
+            }
+
+            NV_GPU_DISPLAYIDS* dispIds = NULL;
+            dispIds = new NV_GPU_DISPLAYIDS[displayIdCount];
+            dispIds->version = NV_GPU_DISPLAYIDS_VER;
+
+            status = NvAPI_GPU_GetConnectedDisplayIds(ahGPU[i], dispIds, &displayIdCount, 0);
+            if (status != NVAPI_OK)
+            {
+                delete[] dispIds;
+                PrintError2(status);
+            }
+
+            // Iterate over displays to test for HDR capabilities
+            for (NvU32 dispIndex = 0; (dispIndex < displayIdCount) && dispIds[dispIndex].isActive; dispIndex++)
+            {
+                NV_HDR_CAPABILITIES hdrCapabilities = {};
+                hdrCapabilities.version = NV_HDR_CAPABILITIES_VER;
+
+                if (NVAPI_OK == NvAPI_Disp_GetHdrCapabilities(dispIds[dispIndex].displayId, &hdrCapabilities))
+                {
+                    if (hdrCapabilities.isST2084EotfSupported)
+                    {
+
+                        NV_HDR_COLOR_DATA hdrColorData = {};
+                        memset(&hdrColorData, 0, sizeof(hdrColorData));
+
+                        hdrColorData.version = NV_HDR_COLOR_DATA_VER;
+                        hdrColorData.cmd = NV_HDR_CMD_GET;
+                        hdrColorData.static_metadata_descriptor_id = NV_STATIC_METADATA_TYPE_1;
+
+                        status = NvAPI_Disp_HdrColorControl(dispIds[dispIndex].displayId, &hdrColorData);
+                        if (status != NVAPI_OK)
+                            PrintError2(status);
+                        if (hdrColorData.hdrMode == NV_HDR_MODE_OFF) {
+                            if (doSwitch) {
+                                hdrColorData.version = NV_HDR_COLOR_DATA_VER;
+                                hdrColorData.cmd = NV_HDR_CMD_SET;
+                                hdrColorData.static_metadata_descriptor_id = NV_STATIC_METADATA_TYPE_1;
+                                hdrColorData.hdrMode = NV_HDR_MODE_UHDA ;
+
+                                status = NvAPI_Disp_HdrColorControl(dispIds[dispIndex].displayId, &hdrColorData);
+                                if (status != NVAPI_OK)
+                                    PrintError2(status);
+                                result = 1;
+                            }
+                            else {
+                                result = 0;
+                            }
+                        }
+                        else {
+                            if (doSwitch) {
+                                hdrColorData.version = NV_HDR_COLOR_DATA_VER;
+                                hdrColorData.cmd = NV_HDR_CMD_SET;
+                                hdrColorData.static_metadata_descriptor_id = NV_STATIC_METADATA_TYPE_1;
+                                hdrColorData.hdrMode = NV_HDR_MODE_OFF;
+
+                                status = NvAPI_Disp_HdrColorControl(dispIds[dispIndex].displayId, &hdrColorData);
+                                if (status != NVAPI_OK)
+                                    PrintError2(status);
+                                result = 0;
+                            }
+                            else {
+                                result = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            delete[] dispIds;
+        }
+
+
+
+        NvAPI_Unload();
+
+
+        return result;
+
+    }
 
 }
