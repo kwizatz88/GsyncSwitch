@@ -14,7 +14,7 @@ Note : as a gamer I don't want an app using resources on background, so the app 
 ----------------------------------------------------------------------------------------------------------------------------                                                                                                              
 If you want to build the projects yourself :
 
-- GsyncSwitchEXE : C++ project to make an exe to switch Gsync (using NVAPI)
+- GsyncSwitchEXE : C++ project to make a dll wrapper to switch Gsync (using NVAPI), or for other NVAPI calls (used to be an exe file)
 - GsyncSwitch : C# project for the simple app in taskbar (it has GsyncSwitchEXE.exe in it)
 
 To compile GsyncSwitchEXE project, you need NVAPI (not included for copyright purpose) available here :
