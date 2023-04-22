@@ -50,3 +50,6 @@ v3.1 : Updated HDR switch by using NVAPI instead of Win11 shortcut
 Also get the HDR state via NVAPI to change the HDR icon in the app depending on the state (green = HDR on, black = off)
 Fixed some app memory by forcing the GC to free memory on right click
 Added the nircmd.exe file in release for refresh rate switch (forgot to put it back in prev releases)
+
+v3.1.1 : Stopped loading HDR and Gsync status every right click for faster load
+(as a drawback if HDR or Gsync is switched outside app, status will be desynced until switches or app restarted)
