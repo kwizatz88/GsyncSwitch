@@ -1,5 +1,6 @@
 # GsyncSwitch
 Simple and light Windows App to switch G-Sync, HDR on/off, Vsync, Frame limiter, resolutions/frequencies, monitors with one click in taskbar
+
 Icons color shows the current status (green = On, black = Off) 
 
 As a gamer I don't want an app using resources on background, so the app does nothing unless you click on it (no timed status update nor stuff like that) :
