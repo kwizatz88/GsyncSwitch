@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GsyncSwitch": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
