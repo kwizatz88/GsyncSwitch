@@ -3,6 +3,7 @@ Simple and light Windows App to switch G-Sync, HDR on/off, Vsync, Frame limiter,
 
 .NET 6.0 runtime needed to run the app :
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+(just take what's under ".NET Desktop Runtime 6.x.x.x"
 
 (Vsync and Frame limiter are the global 3D settings you can change in NVCP)
 
