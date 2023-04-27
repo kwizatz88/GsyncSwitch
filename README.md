@@ -1,5 +1,6 @@
 # GsyncSwitch
 Simple and light Windows App to switch G-Sync, HDR on/off, Vsync, Frame limiter, resolutions/frequencies, monitors with one click in taskbar
+
 .NET 6.0 runtime needed to run the app :
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
