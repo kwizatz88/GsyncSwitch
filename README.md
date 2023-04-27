@@ -20,8 +20,9 @@ and launch GsyncSwitch.exe for toolbar app (you can check launch on startup if n
 
 Icons color shows the current status (green = On, black = Off) : note that the status aren't updated on right click, so if values are changed out of the app, desync my occured, until one switch is done or app reloaded.
 
-To switch Gsync mode, you can also double click on icon in taskbar :
+To switch both Gsync mode and HDR mode at same time, you can also double click on icon in taskbar :
 ![image](https://user-images.githubusercontent.com/71530061/163377488-4f60ebdc-3005-47ec-89d9-f47d475a3db5.png)
+(if their status is unsync, HDR will be switched first to sync them)
 
 
 ----------------------------------------------------------------------------------------------------------------------------                                                                                                              
