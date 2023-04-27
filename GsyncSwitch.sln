@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GsyncSwitch", "GsyncSwitch\GsyncSwitch.csproj", "{6A05521C-6F32-4C28-B7EC-E5C45E76ED65}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GsyncSwitchEXE", "..\GsyncSwitchEXE\GsyncSwitchEXE\GsyncSwitchEXE.vcxproj", "{CE4ACD83-92CF-4843-919C-D50A8048DAAA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GsyncSwitchNVAPI", "GsyncSwitchNVAPI\GsyncSwitchEXE.vcxproj", "{CE4ACD83-92CF-4843-919C-D50A8048DAAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
