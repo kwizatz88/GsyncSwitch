@@ -645,19 +645,42 @@ namespace GsyncSwitch
         private void SwitchGsync_Click(object sender, EventArgs e)
         {
             newGsyncStatus = NVAPIWrapperSwitchGsync(true);
+            newVsyncStatus = NVAPIWrapperSwitchVsync(false);
+            newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
         }
         private void SwitchVsync_Click(object sender, EventArgs e)
         {
             newVsyncStatus = NVAPIWrapperSwitchVsync(true);
+            newGsyncStatus = NVAPIWrapperSwitchGsync(false);
+            newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
         }
         private void SwitchFrameLimiter_Click(object sender, EventArgs e)
         {
             newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(true,maxFps);
+            newGsyncStatus = NVAPIWrapperSwitchGsync(false);
+            newVsyncStatus = NVAPIWrapperSwitchVsync(false);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
         }
 
         private void NotifyIcon_DoubleClick(object sender, EventArgs e)
         {
-            newGsyncStatus = NVAPIWrapperSwitchGsync(true);
+            newGsyncStatus = NVAPIWrapperSwitchGsync(false);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
+
+            if (newGsyncStatus == newHDRStatus)
+            {
+                newGsyncStatus = NVAPIWrapperSwitchGsync(true);
+                newHDRStatus = NVAPIWrapperSwitchHDR(true);
+            }
+            else
+            {
+                newHDRStatus = NVAPIWrapperSwitchHDR(true);
+            }
+
+            newVsyncStatus = NVAPIWrapperSwitchVsync(false);
+            newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
         }
     }
 
