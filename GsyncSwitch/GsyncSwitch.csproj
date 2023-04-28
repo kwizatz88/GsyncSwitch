@@ -35,10 +35,24 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="config.ini" />
+    <None Remove="GsyncSwitchNVAPI.dll" />
+    <None Remove="nircmd.exe" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Letter_G.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="GsyncSwitchNVAPI.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="hdr.png" />
+    <Content Include="nircmd.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="nvidia_logo.png" />
   </ItemGroup>
   <ItemGroup>
@@ -65,16 +79,5 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="config.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="GsyncSwitchNVAPI.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="nircmd.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>
