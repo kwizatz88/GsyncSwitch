@@ -111,6 +111,7 @@ namespace GsyncSwitch
         private ToolStripMenuItem monitorClone;
         private ToolStripMenuItem monitorExtend;
         private ToolStripMenuItem speakerStatus;
+        private ToolStripMenuItem editConfig;
         private ToolStripMenuItem exitApplication;
         private ToolStripMenuItem launchAtStartup;
         private Color defaultSpeakerStatusColor;
@@ -407,6 +408,7 @@ namespace GsyncSwitch
             monitorClone = new ToolStripMenuItem();
             monitorExtend = new ToolStripMenuItem();
             speakerStatus = new ToolStripMenuItem();
+            editConfig = new ToolStripMenuItem();
             exitApplication = new ToolStripMenuItem();
             launchAtStartup = new ToolStripMenuItem();
 
@@ -501,6 +503,10 @@ namespace GsyncSwitch
 
             contextMenu.Items.Add(new ToolStripSeparator());
 
+            editConfig.Text = "Edit configuration";
+            editConfig.Click += new EventHandler(EditConfig_Click);
+            contextMenu.Items.Add(editConfig);
+            
             exitApplication.Text = "Exit..";
             exitApplication.Click += new EventHandler(ExitApplication_Click);
             contextMenu.Items.Add(exitApplication);
@@ -634,7 +640,12 @@ namespace GsyncSwitch
             Process.Start(new ProcessStartInfo("control", "mmsys.cpl sounds"));
         }
 
+        private void EditConfig_Click(object sender, EventArgs e)
+        {
+            string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
+            Process.Start("notepad.exe", configFilePath);
 
+        }
         private void ExitApplication_Click(object sender, EventArgs e)
         {
             this.notifyIcon1.Visible = false;
