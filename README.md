@@ -22,6 +22,8 @@ Monitors Ids are the name they have in NVCP (you can use the label you want):
 
 and launch GsyncSwitch.exe for toolbar app (you can check launch on startup if needed)
 
+Best use the setup.exe file to install the app and get auto updates at launch
+
 Icons color shows the current status (green = On, black = Off) : note that the status aren't updated on right click, so if values are changed out of the app, desync my occured, until one switch is done or app reloaded.
 
 To switch both Gsync mode and HDR mode at same time, you can also double click on icon in taskbar :
