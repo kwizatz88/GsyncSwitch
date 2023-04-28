@@ -33,6 +33,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
+    <ApplicationIcon>Letter_G.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="config.ini" />
@@ -50,6 +51,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="hdr.png" />
+    <Content Include="Letter_G.ico" />
     <Content Include="nircmd.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
