@@ -70,6 +70,9 @@
     <None Update="config.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="GsyncSwitchNVAPI.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="nircmd.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
