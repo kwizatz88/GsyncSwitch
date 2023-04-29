@@ -34,10 +34,10 @@ To switch both Gsync mode and HDR mode at same time, you can also double click o
 ----------------------------------------------------------------------------------------------------------------------------                                                                                                              
 If you want to build the projects yourself :
 
-- GsyncSwitchEXE : C++ project to make a dll wrapper to switch Gsync (using NVAPI), or for other NVAPI calls (used to be an exe file)
+- GsyncSwitchNVAPI : C++ project to make a dll wrapper to switch Gsync (using NVAPI), or for other NVAPI calls 
 - GsyncSwitch : C# project for the simple app in taskbar
 
-To compile GsyncSwitchEXE project, you need NVAPI (not included for copyright purpose) available here :
+To compile GsyncSwitchNVAPI project, you need NVAPI (not included for copyright purpose) available here :
 https://developer.nvidia.com/nvapi
 
 Note: for frequencies/resolutions switches, the app uses a free tool : nircmd.exe
