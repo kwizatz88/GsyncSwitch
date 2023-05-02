@@ -22,6 +22,8 @@ Monitors Ids are the name they have in NVCP (you can use the label you want):
 
 and launch GsyncSwitch.exe for toolbar app (you can check launch on startup if needed)
 
+Best use the setup.exe file to install the app and get auto updates at launch
+
 Icons color shows the current status (green = On, black = Off) : note that the status aren't updated on right click, so if values are changed out of the app, desync my occured, until one switch is done or app reloaded.
 
 To switch both Gsync mode and HDR mode at same time, you can also double click on icon in taskbar :
@@ -32,10 +34,10 @@ To switch both Gsync mode and HDR mode at same time, you can also double click o
 ----------------------------------------------------------------------------------------------------------------------------                                                                                                              
 If you want to build the projects yourself :
 
-- GsyncSwitchEXE : C++ project to make a dll wrapper to switch Gsync (using NVAPI), or for other NVAPI calls (used to be an exe file)
+- GsyncSwitchNVAPI : C++ project to make a dll wrapper to switch Gsync (using NVAPI), or for other NVAPI calls 
 - GsyncSwitch : C# project for the simple app in taskbar
 
-To compile GsyncSwitchEXE project, you need NVAPI (not included for copyright purpose) available here :
+To compile GsyncSwitchNVAPI project, you need NVAPI (not included for copyright purpose) available here :
 https://developer.nvidia.com/nvapi
 
 Note: for frequencies/resolutions switches, the app uses a free tool : nircmd.exe
