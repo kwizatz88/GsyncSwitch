@@ -317,11 +317,11 @@ namespace GsyncSwitch
                 string monitor = MonitorFriendlyName(DisplayPaths[i].targetInfo.adapterId,
                                                      DisplayPaths[i].targetInfo.id);
 
-                if (monitor != null && monitor.Equals(idMonitor1))
+                if (monitor != null && monitor.Contains(idMonitor1))
                 {
                     idMonitor1ToClone = i;
                 }
-                else if (monitor != null && monitor.Equals(idMonitor2))
+                else if (monitor != null && monitor.Contains(idMonitor2))
                 {
                     idMonitor2ToClone = i;
                 }

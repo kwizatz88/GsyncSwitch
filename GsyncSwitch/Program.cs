@@ -564,7 +564,7 @@ namespace GsyncSwitch
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
             newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false,maxFps);
-            newHDRStatus = NVAPIWrapperSwitchHDR(true);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
         }
 
         private void MonitorClone_Click(object sender, EventArgs e)
@@ -573,7 +573,7 @@ namespace GsyncSwitch
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
             newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
-            newHDRStatus = NVAPIWrapperSwitchHDR(true);
+            newHDRStatus = NVAPIWrapperSwitchHDR(false);
         }
 
         private void Monitor1_Click(object sender, EventArgs e)

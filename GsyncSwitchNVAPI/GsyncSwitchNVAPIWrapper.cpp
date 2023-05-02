@@ -18,7 +18,7 @@ void PrintError2(NvAPI_Status status)
 	NvAPI_ShortString szDesc = { 0 };
 	NvAPI_GetErrorMessage(status, szDesc);
 	printf(" NVAPI error: %s\n", szDesc);
-	exit(-1);
+//	exit(-1);
 }
 
 
