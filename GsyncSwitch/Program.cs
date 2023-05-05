@@ -524,7 +524,7 @@ namespace GsyncSwitch
             try
             {
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                appDataDir = Path.Combine(baseDir, "..", "Local", "Apps", "2.0", "D9BLTXER.REC");
+                appDataDir = Path.Combine(baseDir, "..");
 
                 string[] dirs = Directory.GetDirectories(appDataDir, "gsyn..tion_*_*_*");
 
