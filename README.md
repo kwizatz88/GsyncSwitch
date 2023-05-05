@@ -16,7 +16,7 @@ As a gamer I don't want an app using resources on background, so the app does no
 If you take the release (here on the right), just put the files in the same folder, update the config.ini file as needed : you can remove, add or change the resolutions/frequencies switches and labels shown in app as you want (the line "To 144 Hz=3840 2160 32 144" can be changed to "Toto 2K 24 Hz=2560 1440 32 24" if you want): 
 ![GsyncSwitchConfig](https://user-images.githubusercontent.com/71530061/234523003-381c3f50-365e-4108-bc86-3bd48ba8651d.png)
 
-Monitors Ids are the name they have in NVCP (you can use the label you want):
+Monitors Ids are the name they have in NVCP -note that part of the name works in ini file, if you have huge monitor names - (you can use the label you want):
 ![GsyncSwitchMonitorsIds](https://user-images.githubusercontent.com/71530061/234523192-99138158-c3e0-4b37-aca2-724b84d631e9.png)
 
 
