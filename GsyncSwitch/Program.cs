@@ -118,6 +118,7 @@ namespace GsyncSwitch
         private ToolStripMenuItem settings;
         private ToolStripMenuItem launchAtStartup;
         private ToolStripMenuItem openLocationFolder;
+        private ToolStripMenuItem openProjectWebsite;
         private Color defaultSpeakerStatusColor;
         private Peripherals peripherals;
 
@@ -243,6 +244,7 @@ namespace GsyncSwitch
             exitApplication = new ToolStripMenuItem();
             launchAtStartup = new ToolStripMenuItem();
             openLocationFolder = new ToolStripMenuItem();
+            openProjectWebsite = new ToolStripMenuItem();
 
             contextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
 //            contextMenu.Renderer = new KwizatZMenuRenderer();
@@ -360,6 +362,10 @@ namespace GsyncSwitch
             openLocationFolder.Text = "Open GsyncSwitch location folder";
             openLocationFolder.Click += new EventHandler(OpenLocationFolder_Click);
             settings.DropDownItems.Add(openLocationFolder);
+
+            openProjectWebsite.Text = "View Project Website";
+            openProjectWebsite.Click += new EventHandler(OpenProjectWebsite_Click);
+            settings.DropDownItems.Add(openProjectWebsite);
 
             launchAtStartup.Text = "Launch at Windows startup";
             // Check to see the current state (running at startup or not)
@@ -540,23 +546,6 @@ namespace GsyncSwitch
                 MessageBox.Show("Previous version of config.ini not found. You can try using the \"Open GsyncSwitch location folder\" menu instead and going one folder upper to check if previous installation with config.ini is available", "Previous configuration not found", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
-            /*
-                        string appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                        string appFolderPath = Path.Combine(appDataFolderPath, "Apps");
-
-                        var appDirs = new DirectoryInfo(appFolderPath).GetDirectories("*", SearchOption.AllDirectories)
-                            .Where(d => d.Name.StartsWith("gsyn..tion_"))
-                            .OrderByDescending(d => d.LastWriteTime)
-                            .Skip(1)
-                            .Take(1);
-
-                        if (appDirs.Any())
-                        {
-                            string secondLastVersionPath = appDirs.First().FullName;
-                            Process.Start("explorer.exe", secondLastVersionPath);
-                            Process.Start("notepad.exe", secondLastVersionPath);
-                        }
-            */
         }
 
         private void OpenLocationFolder_Click(object sender, EventArgs e)
@@ -565,6 +554,10 @@ namespace GsyncSwitch
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
             // Open the directory in Windows Explorer
             Process.Start("explorer.exe", path);
+        }
+        private void OpenProjectWebsite_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/kwizatz88/GsyncSwitch");
         }
 
         private void ExitApplication_Click(object sender, EventArgs e)
