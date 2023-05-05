@@ -142,5 +142,21 @@ namespace GsyncSwitch.Properties {
             }
         }
 
+        internal static System.Drawing.Bitmap controller_off
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("controller_off", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        internal static System.Drawing.Bitmap controller_on
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("controller_on", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
