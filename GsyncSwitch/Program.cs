@@ -527,6 +527,9 @@ namespace GsyncSwitch
         private void EditOldConfig_Click(object sender, EventArgs e)
         {
             string appDataDir = "";
+            string errorMsg = "Previous version of config.ini not found. You can try using the \"Open GsyncSwitch location folder\" menu instead and going one folder upper to check if previous installation with config.ini is available";
+            string errorMsgTitle = "Previous configuration not found";
+
             try
             {
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -539,11 +542,15 @@ namespace GsyncSwitch
                     string previousVersionDir = dirs[dirs.Length - 2];
                     Process.Start("notepad.exe", previousVersionDir + "\\config.ini");
                 }
+                else
+                {
+                    MessageBox.Show(errorMsg, errorMsgTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 
             }
             catch (Exception)
             {
-                MessageBox.Show("Previous version of config.ini not found. You can try using the \"Open GsyncSwitch location folder\" menu instead and going one folder upper to check if previous installation with config.ini is available", "Previous configuration not found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(errorMsg, errorMsgTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
         }
