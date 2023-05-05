@@ -520,10 +520,11 @@ namespace GsyncSwitch
         }
         private void EditOldConfig_Click(object sender, EventArgs e)
         {
+            string appDataDir = "";
             try
             {
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string appDataDir = Path.Combine(baseDir, "..", "Local", "Apps", "2.0", "D9BLTXER.REC");
+                appDataDir = Path.Combine(baseDir, "..", "Local", "Apps", "2.0", "D9BLTXER.REC");
 
                 string[] dirs = Directory.GetDirectories(appDataDir, "gsyn..tion_*_*_*");
 
@@ -536,7 +537,7 @@ namespace GsyncSwitch
             }
             catch (Exception)
             {
-                MessageBox.Show("Previous version of config.ini not found. You can try using the \"Open GsyncSwitch location folder\" menu instead and going one folder upper to check if previous installation with config.ini is available", "Previous configuration not found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Previous version of config.ini not found. You can try using the \"Open GsyncSwitch location folder\" menu instead and going one folder upper to check if previous installation with config.ini is available, dir : "+ appDataDir, "Previous configuration not found", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             /*
