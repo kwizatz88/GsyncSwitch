@@ -557,7 +557,7 @@ namespace GsyncSwitch
         }
         private void OpenProjectWebsite_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/kwizatz88/GsyncSwitch");
+            Process.Start(new ProcessStartInfo("https://github.com/kwizatz88/GsyncSwitch") { UseShellExecute = true });
         }
 
         private void ExitApplication_Click(object sender, EventArgs e)
