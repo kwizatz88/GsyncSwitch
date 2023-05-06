@@ -515,6 +515,8 @@ namespace GsyncSwitch
 
         private void ControllerStatus_Click(object sender, EventArgs e)
         {
+            var simu = new InputSimulator();
+            simu.Keyboard.ModifiedKeyStroke(VirtualKeyCode.LWIN, VirtualKeyCode.VK_G);
 
         }
 
