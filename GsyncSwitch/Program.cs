@@ -97,6 +97,7 @@ namespace GsyncSwitch
         private String monitor1Id = "";
         private String monitor2Id = "";
         private bool showControllerStatus = false;
+        private bool use2monitors = false;
         private String controllerStatusText = "unavailable";
 
         ControlContainer container = new ControlContainer();
@@ -191,6 +192,7 @@ namespace GsyncSwitch
             string iniFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
             IniFile iniFile = new IniFile(iniFilePath);
 
+            bool.TryParse(iniFile.Read("monitors", "use2monitors"), out use2monitors);
             monitor1Label = iniFile.Read("monitors", "monitor1Label");
             monitor2Label = iniFile.Read("monitors", "monitor2Label");
             monitor1Id = iniFile.Read("monitors", "monitor1Id");
@@ -331,23 +333,26 @@ namespace GsyncSwitch
             if(isFrequency) 
                 contextMenu.Items.Add(new ToolStripSeparator());
 
-            monitor2.Text = "Monitor "+monitor2Label;
-            monitor2.Click += new EventHandler(Monitor2_Click);
-            contextMenu.Items.Add(monitor2);
+            if (use2monitors)
+            {
+                monitor2.Text = "Monitor " + monitor2Label;
+                monitor2.Click += new EventHandler(Monitor2_Click);
+                contextMenu.Items.Add(monitor2);
 
-            monitor1.Text = "Monitor " + monitor1Label;
-            monitor1.Click += new EventHandler(Monitor1_Click);
-            contextMenu.Items.Add(monitor1);
+                monitor1.Text = "Monitor " + monitor1Label;
+                monitor1.Click += new EventHandler(Monitor1_Click);
+                contextMenu.Items.Add(monitor1);
 
-            monitorClone.Text = "Monitor Clone";
-            monitorClone.Click += new EventHandler(MonitorClone_Click);
-            contextMenu.Items.Add(monitorClone);
+                monitorClone.Text = "Monitor Clone";
+                monitorClone.Click += new EventHandler(MonitorClone_Click);
+                contextMenu.Items.Add(monitorClone);
 
-            monitorExtend.Text = "Monitor Extend";
-            monitorExtend.Click += new EventHandler(MonitorExtend_Click);
-            contextMenu.Items.Add(monitorExtend);
+                monitorExtend.Text = "Monitor Extend";
+                monitorExtend.Click += new EventHandler(MonitorExtend_Click);
+                contextMenu.Items.Add(monitorExtend);
 
-            contextMenu.Items.Add(new ToolStripSeparator());
+                contextMenu.Items.Add(new ToolStripSeparator());
+            }
 
             settings.Text = "Settings";
 
