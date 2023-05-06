@@ -18,7 +18,7 @@ If you take the release (here on the right), just put the files in the same fold
 
 Monitors Ids are the name they have in NVCP -note that part of the name works in ini file, if you have huge monitor names - (you can use the label you want):
 ![GsyncSwitchMonitorsIds](https://user-images.githubusercontent.com/71530061/234523192-99138158-c3e0-4b37-aca2-724b84d631e9.png)
-
+"try to open previous configuration" menu doesn't revert anything, it just opens your previous config.ini file, so you can copy what you want here to manually put it in new configuration
 
 and launch GsyncSwitch.exe for toolbar app (you can check launch on startup if needed)
 
