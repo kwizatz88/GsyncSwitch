@@ -1,0 +1,20 @@
+﻿[blank]
+
+[monitors]
+use2monitors=true
+#don't bother setting this if you set use2monitors=false :
+monitor1Label=QN95A
+monitor1Id=Q95A
+monitor2Label=QN95B
+monitor2Id=QBQ95
+
+[frequencies]
+To 144 Hz=3840 2160 32 144
+To 120 Hz=3840 2160 32 120
+
+[frameLimiterMaxFps]
+maxFps=144
+
+[others]
+showControllerStatus=true
+

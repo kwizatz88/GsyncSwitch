@@ -176,8 +176,15 @@ namespace GsyncSwitch
         private string getControllerStatus()
         {
             int batteryLevel = peripherals.GetControllerBatteryLevel();
-            if (batteryLevel!=-1)
-                controllerStatusText = batteryLevel.ToString()+" %";
+            if (batteryLevel != -1)
+            {
+                if (batteryLevel >= 75)
+                    controllerStatusText = "High";
+                else if (batteryLevel >=45)
+                    controllerStatusText = "Medium";
+                else
+                    controllerStatusText = "Low";
+            }
             else
                 controllerStatusText = "unavailable";
 
@@ -187,30 +194,45 @@ namespace GsyncSwitch
         public IconClass()
         {
             peripherals = new Peripherals();
-
-            // read ini file config.ini to get some values
-            string iniFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
-            IniFile iniFile = new IniFile(iniFilePath);
-
-            bool.TryParse(iniFile.Read("monitors", "use2monitors"), out use2monitors);
-            monitor1Label = iniFile.Read("monitors", "monitor1Label");
-            monitor2Label = iniFile.Read("monitors", "monitor2Label");
-            monitor1Id = iniFile.Read("monitors", "monitor1Id");
-            monitor2Id = iniFile.Read("monitors", "monitor2Id");
-
-            int.TryParse(iniFile.Read("frameLimiterMaxFps", "maxFps"), out maxFps) ;
-            bool.TryParse(iniFile.Read("others", "showControllerStatus"), out showControllerStatus);
-
-            // Load parameters from the INI file
             Dictionary<string, string> frequencies = new Dictionary<string, string>();
-            string[] sectionNames = new string[] { "frequencies" }; // section names from config file
 
-            foreach (string sectionName in sectionNames)
+            // Load settings from registry or ini file
+            if (RegistryHelper.RegistryKeyExists(Registry.CurrentUser, RegistryHelper.REG_KEY))
             {
-                foreach (string key in iniFile.GetKeys(sectionName))
+                use2monitors = RegistryHelper.GetBoolValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "Use2Monitors");
+                monitor1Label = RegistryHelper.GetStringValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "Monitor1Label");
+                monitor2Label = RegistryHelper.GetStringValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "Monitor2Label");
+                monitor1Id = RegistryHelper.GetStringValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "Monitor1Id");
+                monitor2Id = RegistryHelper.GetStringValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "Monitor2Id");
+                maxFps = RegistryHelper.GetIntValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "MaxFps");
+                showControllerStatus = RegistryHelper.GetBoolValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "ShowControllerStatus");
+                frequencies = RegistryHelper.GetDictionary(Registry.CurrentUser, RegistryHelper.REG_KEY, "Frequencies");
+            }
+            else
+            {
+                // read ini file config.ini to get some values
+                string iniFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
+                IniFile iniFile = new IniFile(iniFilePath);
+
+                bool.TryParse(iniFile.Read("monitors", "use2monitors"), out use2monitors);
+                monitor1Label = iniFile.Read("monitors", "monitor1Label");
+                monitor2Label = iniFile.Read("monitors", "monitor2Label");
+                monitor1Id = iniFile.Read("monitors", "monitor1Id");
+                monitor2Id = iniFile.Read("monitors", "monitor2Id");
+
+                int.TryParse(iniFile.Read("frameLimiterMaxFps", "maxFps"), out maxFps);
+                bool.TryParse(iniFile.Read("others", "showControllerStatus"), out showControllerStatus);
+
+                // Load parameters from the INI file
+                string[] sectionNames = new string[] { "frequencies" }; // section names from config file
+
+                foreach (string sectionName in sectionNames)
                 {
-                    string value = iniFile.Read(sectionName, key);
-                    frequencies.Add(key, value);
+                    foreach (string key in iniFile.GetKeys(sectionName))
+                    {
+                        string value = iniFile.Read(sectionName, key);
+                        frequencies.Add(key, value);
+                    }
                 }
             }
 
@@ -359,8 +381,9 @@ namespace GsyncSwitch
             editConfig.Text = "Edit configuration";
             editConfig.Click += new EventHandler(EditConfig_Click);
             settings.DropDownItems.Add(editConfig);
+            settings.DropDownItems.Add(new ToolStripSeparator());
 
-            editOldConfig.Text = "Try to open previous configuration";
+            editOldConfig.Text = "Try to open config.ini from previous version";
             editOldConfig.Click += new EventHandler(EditOldConfig_Click);
             settings.DropDownItems.Add(editOldConfig);
 
@@ -371,6 +394,7 @@ namespace GsyncSwitch
             openProjectWebsite.Text = "View Project Website";
             openProjectWebsite.Click += new EventHandler(OpenProjectWebsite_Click);
             settings.DropDownItems.Add(openProjectWebsite);
+            settings.DropDownItems.Add(new ToolStripSeparator());
 
             launchAtStartup.Text = "Launch at Windows startup";
             // Check to see the current state (running at startup or not)
@@ -527,9 +551,29 @@ namespace GsyncSwitch
 
         private void EditConfig_Click(object sender, EventArgs e)
         {
-            string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
-            Process.Start("notepad.exe", configFilePath);
+            /*
+                        string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.ini");
+                        Process.Start("notepad.exe", configFilePath);
+            */
 
+            // Create a new instance of the SettingsForm
+            SettingsForm settingsForm = new SettingsForm();
+
+            // Show the form as a modal dialog
+            if (settingsForm.ShowDialog() == DialogResult.OK)
+            {
+                // The user clicked "Save", so save the updated settings from the form
+                var confirmResult = MessageBox.Show("Settings saved successfully to registry (config.ini is deprecated).\nDo you want to restart app to load new settings ?", "Confirm Restart", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    Application.Restart();
+                }
+            }
+            else
+            {
+                // The user clicked "Cancel", so don't do anything
+                MessageBox.Show("Changes discarded.", "Info");
+            }
         }
         private void EditOldConfig_Click(object sender, EventArgs e)
         {

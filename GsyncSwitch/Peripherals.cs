@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Power;
 using Windows.Gaming.Input;
 using Windows.Gaming.UI;
+using Windows.System.Power;
 
 namespace GsyncSwitch
 {
@@ -41,7 +42,7 @@ namespace GsyncSwitch
                 BatteryReport batteryReport = gamepad.TryGetBatteryReport();
                 if (batteryReport != null)
                 {
-                    int? remainingCapacity = batteryReport.RemainingCapacityInMilliwattHours;
+                    int ? remainingCapacity = batteryReport.RemainingCapacityInMilliwattHours;
                     int? fullCapacity = batteryReport.FullChargeCapacityInMilliwattHours;
 
                     if (fullCapacity > 0)
