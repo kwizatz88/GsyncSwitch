@@ -63,10 +63,17 @@ namespace GsyncSwitch
         private void btnSave_Click(object sender, EventArgs e)
         {
             // Save settings to registry
-            SaveSettingsToRegistry();
-            // Set DialogResult to OK and close the form
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            bool completionCheck = SaveSettingsToRegistry();
+            if (completionCheck)
+            {
+                // Set DialogResult to OK and close the form
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("If \"Use 2 monitors\" is checked, next 4 input values must be filled.\n\nYou can use what you want for labels and Ids are the monitor names in NVCP (you can use part of the names if they are too long, as long as they are precise enough to identify them).", "Error");
+            }
         }
 
         private void LoadSettingsFromRegistry()
@@ -106,8 +113,28 @@ namespace GsyncSwitch
             }
         }
 
-        private void SaveSettingsToRegistry()
+        private bool SaveSettingsToRegistry()
         {
+
+            if (cbUse2Monitors.Checked)
+            {
+                if (string.IsNullOrWhiteSpace(tbMonitor1Label.Text))
+                {
+                    return false;
+                }
+                if (string.IsNullOrWhiteSpace(tbMonitor2Label.Text))
+                {
+                    return false;
+                }
+                if (string.IsNullOrWhiteSpace(tbMonitor1Id.Text))
+                {
+                    return false;
+                }
+                if (string.IsNullOrWhiteSpace(tbMonitor2Id.Text))
+                {
+                    return false;
+                }
+            }
 
             RegistryHelper.SetBoolValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "Use2Monitors", cbUse2Monitors.Checked);
             RegistryHelper.SetStringValue(Registry.CurrentUser, RegistryHelper.REG_KEY, "Monitor1Label", tbMonitor1Label.Text);
@@ -130,6 +157,7 @@ namespace GsyncSwitch
             }
 
             RegistryHelper.SetDictionary(Registry.CurrentUser, RegistryHelper.REG_KEY, "Frequencies", frequencies);
+            return true;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

@@ -73,7 +73,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(705, 159);
+            label1.Location = new System.Drawing.Point(654, 159);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(263, 48);
             label1.TabIndex = 2;
@@ -88,14 +88,14 @@
             // 
             // tbMonitor1Id
             // 
-            tbMonitor1Id.Location = new System.Drawing.Point(107, 338);
+            tbMonitor1Id.Location = new System.Drawing.Point(107, 359);
             tbMonitor1Id.Name = "tbMonitor1Id";
             tbMonitor1Id.Size = new System.Drawing.Size(516, 55);
             tbMonitor1Id.TabIndex = 4;
             // 
             // tbMonitor2Id
             // 
-            tbMonitor2Id.Location = new System.Drawing.Point(107, 440);
+            tbMonitor2Id.Location = new System.Drawing.Point(107, 461);
             tbMonitor2Id.Name = "tbMonitor2Id";
             tbMonitor2Id.Size = new System.Drawing.Size(516, 55);
             tbMonitor2Id.TabIndex = 5;
@@ -103,7 +103,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(705, 249);
+            label2.Location = new System.Drawing.Point(654, 256);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(263, 48);
             label2.TabIndex = 6;
@@ -112,7 +112,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(705, 345);
+            label3.Location = new System.Drawing.Point(654, 366);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(222, 48);
             label3.TabIndex = 7;
@@ -122,7 +122,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(705, 440);
+            label4.Location = new System.Drawing.Point(654, 468);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(222, 48);
             label4.TabIndex = 8;
@@ -139,7 +139,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new System.Drawing.Point(353, 570);
+            label5.Location = new System.Drawing.Point(326, 570);
             label5.Name = "label5";
             label5.Size = new System.Drawing.Size(376, 48);
             label5.TabIndex = 10;
