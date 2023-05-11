@@ -410,10 +410,9 @@ namespace GsyncSwitch
                 launchAtStartup.Checked = true;
                 // to update the value as ClickOnce deploy keeps 2 versions, to avoid wrong one starts
                 rkApp.DeleteValue("GsyncSwitch", false);
+                // Add the new value
+                rkApp.SetValue("GsyncSwitch", Application.ExecutablePath);
             }
-            // to update the value as ClickOnce deploy keeps 2 versions, to avoid wrong one starts
-            // Add the new value
-            rkApp.SetValue("GsyncSwitch", Application.ExecutablePath);
 
             launchAtStartup.Click += new EventHandler(LaunchAtStartup_Click);
             settings.DropDownItems.Add(launchAtStartup);
