@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using Windows.Devices.Display.Core;
 
 namespace GsyncSwitch
 {
@@ -257,6 +260,16 @@ namespace GsyncSwitch
             ref DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName
         );
 
+        // Import the ChangeDisplaySettingsEx function
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int ChangeDisplaySettingsEx(
+            string lpszDeviceName,
+            IntPtr lpDevMode,
+            IntPtr hwnd,
+            uint dwflags,
+            IntPtr lParam
+        );
+
         public static string MonitorFriendlyName(LUID adapterId, uint targetId)
         {
             DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = new DISPLAYCONFIG_TARGET_DEVICE_NAME();
@@ -292,22 +305,56 @@ namespace GsyncSwitch
         const int QDC_ONLY_ACTIVE_PATHS = 2;
         const int QDC_DATABASE_CURRENT = 4;
 
+        [Flags]
+        public enum DisplayDeviceStateFlags : int
+        {
+            AttachedToDesktop = 0x00000001,
+            MultiDriver = 0x00000002,
+            PrimaryDevice = 0x00000004,
+            MirroringDriver = 0x00000008,
+            VGACompatible = 0x00000010,
+            Removable = 0x00000020,
+            ModesPruned = 0x08000000,
+            Remote = 0x04000000,
+            Disconnect = 0x02000000,
+            Active = 0x00000001 | 0x00000002
+        }
 
-        public static void CloneDisplays(String idMonitor1, String idMonitor2)
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct DISPLAY_DEVICE
+        {
+            [MarshalAs(UnmanagedType.U4)]
+            public int cb;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string DeviceName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceString;
+            [MarshalAs(UnmanagedType.U4)]
+            public DisplayDeviceStateFlags StateFlags;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceID;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceKey;
+        }
+
+        private const uint DISPLAYCONFIG_PATH_ACTIVE = 0x00000001;
+        private const uint DISPLAYCONFIG_PATH_PRIMARY = 0x00000004;
+
+        public static bool CloneDisplays(String idMonitor1, String idMonitor2)
         {
             ExtendDisplays();
             uint PathCount, ModeCount;
             int error = GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
                 out PathCount, out ModeCount);
             if (error != ERROR_SUCCESS)
-                throw new Win32Exception(error);
+                return false;
 
             DISPLAYCONFIG_PATH_INFO[] DisplayPaths = new DISPLAYCONFIG_PATH_INFO[PathCount];
             DISPLAYCONFIG_MODE_INFO[] DisplayModes = new DISPLAYCONFIG_MODE_INFO[ModeCount];
             error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
                 ref PathCount, DisplayPaths, ref ModeCount, DisplayModes, IntPtr.Zero);
             if (error != ERROR_SUCCESS)
-                throw new Win32Exception(error);
+                return false;
 
             int idMonitor1ToClone = 0;
             int idMonitor2ToClone = 0;
@@ -317,51 +364,16 @@ namespace GsyncSwitch
                 string monitor = MonitorFriendlyName(DisplayPaths[i].targetInfo.adapterId,
                                                      DisplayPaths[i].targetInfo.id);
 
-                if (monitor != null && monitor.Contains(idMonitor1))
+                if (monitor != null && monitor.Contains(idMonitor1, StringComparison.OrdinalIgnoreCase))
                 {
                     idMonitor1ToClone = i;
                 }
-                else if (monitor != null && monitor.Contains(idMonitor2))
+                else if (monitor != null && monitor.Contains(idMonitor2, StringComparison.OrdinalIgnoreCase))
                 {
                     idMonitor2ToClone = i;
                 }
 
             }
-
-            /*
-
-         for (int i = 0; i < ModeCount; i++)
-         {
-             if (DisplayModes[i].infoType == DISPLAYCONFIG_MODE_INFO_TYPE.DISPLAYCONFIG_MODE_INFO_TYPE_TARGET)
-             {
-                 string monitor = MonitorFriendlyName(DisplayModes[i].adapterId, DisplayModes[i].id);
-                 if(monitor != null && monitor.Equals(MONITOR1_TO_CLONE))
-                 {
-                     idMonitor1ToClone = i;
-                 }else if (monitor != null && monitor.Equals(MONITOR2_TO_CLONE))
-                 {
-                     idMonitor2ToClone = i;
-                 }
-             }
-         }
-
-         Console.WriteLine(idMonitor1ToClone);
-         Console.WriteLine(idMonitor2ToClone);
-         Console.ReadLine();
-
-         constexpr UINT flags = SDC_APPLY |
-                                SDC_SAVE_TO_DATABASE |
-                                SDC_ALLOW_CHANGES |
-                                SDC_USE_SUPPLIED_DISPLAY_CONFIG;
-
-         const LONG RESULT = SetDisplayConfig(static_cast<UINT32>(pathArray.size()),
-                                              &pathArray[0],
-                                              static_cast<UINT32>(modeArray.size()),
-                                              &modeArray[0],
-                                              flags);
-
-          SetDisplayConfig(0, IntPtr.Zero, 0, IntPtr.Zero, (SDC_APPLY | SDC_TOPOLOGY_CLONE));
-        */
 
             // To clone two monitors of your choice just copy the 
             // DISPLAYCONFIG_PATH_SOURCE_INFO id and modeInfoIdx.
@@ -369,7 +381,62 @@ namespace GsyncSwitch
             DisplayPaths[idMonitor1ToClone].sourceInfo.id = DisplayPaths[idMonitor2ToClone].sourceInfo.id;
             DisplayPaths[idMonitor1ToClone].sourceInfo.modeInfoIdx = DisplayPaths[idMonitor2ToClone].sourceInfo.modeInfoIdx;
 
-            SetDisplayConfig((uint)DisplayPaths.Length, DisplayPaths, (uint)DisplayModes.Length, DisplayModes, (SDC_APPLY | SDC_SAVE_TO_DATABASE | SDC_ALLOW_CHANGES | SDC_USE_SUPPLIED_DISPLAY_CONFIG));
+            long result = SetDisplayConfig((uint)DisplayPaths.Length, DisplayPaths, (uint)DisplayModes.Length, DisplayModes, (SDC_APPLY | SDC_SAVE_TO_DATABASE | SDC_ALLOW_CHANGES | SDC_USE_SUPPLIED_DISPLAY_CONFIG));
+            if (result == 0) {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public static bool SwitchToMonitor(string monitorName)
+        {
+            uint pathCount, modeCount;
+            int error = GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
+                out pathCount, out modeCount);
+            if (error != ERROR_SUCCESS)
+                return false;
+
+            DISPLAYCONFIG_PATH_INFO[] displayPaths = new DISPLAYCONFIG_PATH_INFO[pathCount];
+            DISPLAYCONFIG_MODE_INFO[] displayModes = new DISPLAYCONFIG_MODE_INFO[modeCount];
+            error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ONLY_ACTIVE_PATHS,
+                ref pathCount, displayPaths, ref modeCount, displayModes, IntPtr.Zero);
+            if (error != ERROR_SUCCESS)
+                return false;
+
+
+            // Find the target monitor based on its name
+            for (int i = 0; i < pathCount; i++)
+            {
+                DISPLAYCONFIG_PATH_INFO pathInfo = displayPaths[i];
+
+                string monitor = MonitorFriendlyName(displayPaths[i].targetInfo.adapterId,
+                                                     displayPaths[i].targetInfo.id);
+
+                // Check if the display path matches the target monitor
+                if (monitor != null && monitor.Contains(monitorName, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Set the target monitor as the primary display
+                    pathInfo.flags |= DISPLAYCONFIG_PATH_ACTIVE;
+                    pathInfo.flags |= DISPLAYCONFIG_PATH_PRIMARY;
+
+                    // Apply the updated display configuration
+                    long result = SetDisplayConfig((uint)displayPaths.Length, displayPaths, (uint)displayModes.Length, displayModes, (SDC_APPLY | SDC_SAVE_TO_DATABASE | SDC_ALLOW_CHANGES | SDC_USE_SUPPLIED_DISPLAY_CONFIG));
+
+                    if (result == 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return false;
         }
 
         public static void ExtendDisplays()

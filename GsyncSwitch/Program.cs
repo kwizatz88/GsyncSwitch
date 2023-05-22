@@ -468,6 +468,8 @@ namespace GsyncSwitch
 
         private void MonitorExtend_Click(object sender, EventArgs e)
         {
+ //           System.Threading.Thread.Sleep(30000);
+
             MonitorSwitch.ExtendDisplays();
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
@@ -477,7 +479,8 @@ namespace GsyncSwitch
 
         private void MonitorClone_Click(object sender, EventArgs e)
         {
-            MonitorSwitch.CloneDisplays(monitor1Id,monitor2Id);
+            if (!MonitorSwitch.CloneDisplays(monitor1Id, monitor2Id))
+                MessageBox.Show("Failed to clone monitors "+monitor1Id+" and "+ monitor2Id, "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
             newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
@@ -486,7 +489,10 @@ namespace GsyncSwitch
 
         private void Monitor1_Click(object sender, EventArgs e)
         {
-            MonitorSwitch.InternalDisplay();
+//            MonitorSwitch.InternalDisplay();
+            if(!MonitorSwitch.SwitchToMonitor(monitor1Id))
+                MessageBox.Show("Monitor "+monitor1Id+" not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
             newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
@@ -495,7 +501,9 @@ namespace GsyncSwitch
 
         private void Monitor2_Click(object sender, EventArgs e)
         {
-            MonitorSwitch.ExternalDisplay();
+//            MonitorSwitch.ExternalDisplay();
+            if (!MonitorSwitch.SwitchToMonitor(monitor2Id))
+                MessageBox.Show("Monitor " + monitor2Id + " not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
             newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
