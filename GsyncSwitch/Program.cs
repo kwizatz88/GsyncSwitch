@@ -489,9 +489,11 @@ namespace GsyncSwitch
 
         private void Monitor1_Click(object sender, EventArgs e)
         {
-//            MonitorSwitch.InternalDisplay();
+            MonitorSwitch.InternalDisplay();
+/*
             if(!MonitorSwitch.SwitchToMonitor(monitor1Id))
                 MessageBox.Show("Monitor "+monitor1Id+" not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+*/
 
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
@@ -501,9 +503,11 @@ namespace GsyncSwitch
 
         private void Monitor2_Click(object sender, EventArgs e)
         {
-//            MonitorSwitch.ExternalDisplay();
+            MonitorSwitch.ExternalDisplay();
+/*
             if (!MonitorSwitch.SwitchToMonitor(monitor2Id))
                 MessageBox.Show("Monitor " + monitor2Id + " not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+*/
             newGsyncStatus = NVAPIWrapperSwitchGsync(false);
             newVsyncStatus = NVAPIWrapperSwitchVsync(false);
             newFrameLimiterStatus = NVAPIWrapperSwitchFrameLimiter(false, maxFps);
