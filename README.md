@@ -42,3 +42,16 @@ To compile GsyncSwitchNVAPI project, you need NVAPI (not included for copyright 
 https://developer.nvidia.com/nvapi
 
 Note: for frequencies/resolutions switches, the app uses a free tool : nircmd.exe
+
+
+# GsyncSwitchCli
+
+Command line interface for GsyncSwitch functions. Current commands availbale:
+
+```
+GsyncSwitchCli enable-gsync
+GsyncSwitchCli disable-gsync
+GsyncSwitchCli toggle-vsync
+GsyncSwitchCli toggle-framelimiter <maxFPS>
+GsyncSwitchCli toggle-hdr
+```
