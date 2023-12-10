@@ -23,81 +23,134 @@ void PrintError2(NvAPI_Status status)
 
 
 extern "C" {
-	GsyncSwitchNVAPIWrapper int NVAPIWrapperSwitchGsync(bool doSwitch) {
-        
-        int result = 0; 
+    // Forward declarations of helper functions
+    void InitializeGsync(NvDRSSessionHandle* hSession, NvDRSProfileHandle* hProfile);
+    void FinalizeGsync(NvDRSSessionHandle hSession);
+    int SetGsyncState(bool enable);
+    int ToggleGsync(bool doSwitch);
 
-        NvAPI_Status status;
-        // (0) Initialize NVAPI. This must be done first of all
-        status = NvAPI_Initialize();
-        if (status != NVAPI_OK)
-            PrintError2(status);
-        // (1) Create the session handle to access driver settings
+    // Original function - toggles G-Sync based on current state
+    GsyncSwitchNVAPIWrapper int NVAPIWrapperSwitchGsync(bool doSwitch) {
+        int result = ToggleGsync(doSwitch);
+        return result;
+    }
+
+    // Function to toggle G-Sync based on a flag: true enables, false disables
+    int NVAPIWrapperToggleGsync(bool enable) {
+        int result = ToggleGsync(enable);
+        return result;
+    }
+
+    // Function to enable G-Sync
+    GsyncSwitchNVAPIWrapper int NVAPIWrapperEnableGsync() {
+        int result = SetGsyncState(true);
+        return result;
+    }
+
+    // Function to disable G-Sync
+    GsyncSwitchNVAPIWrapper int NVAPIWrapperDisableGsync() {
+        int result = SetGsyncState(false);
+        return result;
+    }
+
+    // Helper function to set G-Sync state: true enables, false disables
+    int SetGsyncState(bool enable) {
         NvDRSSessionHandle hSession = 0;
-        status = NvAPI_DRS_CreateSession(&hSession);
-        if (status != NVAPI_OK)
-            PrintError2(status);
-        // (2) load all the system settings into the session
-        status = NvAPI_DRS_LoadSettings(hSession);
-        if (status != NVAPI_OK)
-            PrintError2(status);
-        // (3) Obtain the Base profile. Any setting needs to be inside
-        // a profile, putting a setting on the Base Profile enforces it
-        // for all the processes on the system
         NvDRSProfileHandle hProfile = 0;
-        status = NvAPI_DRS_GetBaseProfile(hSession, &hProfile);
-        if (status != NVAPI_OK)
-            PrintError2(status);
-        // (4) Specify that we want the VSYNC disabled setting
-         // first we fill the NVDRS_SETTING struct, then we call the function
+        InitializeGsync(&hSession, &hProfile);
+
         NVDRS_SETTING drsSetting = { 0 };
         drsSetting.version = NVDRS_SETTING_VER;
-        /*
-            drsSetting.settingId = VSYNCMODE_ID;
-            drsSetting.settingType = NVDRS_DWORD_TYPE;
-            drsSetting.u32CurrentValue = VSYNCMODE_FORCEOFF;
-            */
+        drsSetting.settingId = VRR_MODE_ID;
+        drsSetting.settingType = NVDRS_DWORD_TYPE;
+        drsSetting.u32CurrentValue = enable ? VRR_MODE_DEFAULT : VRR_MODE_DISABLED;
 
+        NvAPI_Status status = NvAPI_DRS_SetSetting(hSession, hProfile, &drsSetting);
+        if (status != NVAPI_OK) {
+            PrintError2(status);
+        }
+
+        status = NvAPI_DRS_SaveSettings(hSession);
+        if (status != NVAPI_OK) {
+            PrintError2(status);
+        }
+
+        FinalizeGsync(hSession);
+
+        return enable ? 1 : 0;
+    }
+
+    // Helper function to toggle G-Sync based on the current state
+    int ToggleGsync(bool doSwitch) {
+        NvDRSSessionHandle hSession = 0;
+        NvDRSProfileHandle hProfile = 0;
+        InitializeGsync(&hSession, &hProfile);
+
+        NVDRS_SETTING drsSetting = { 0 };
+        drsSetting.version = NVDRS_SETTING_VER;
         drsSetting.settingId = VRR_MODE_ID;
         drsSetting.settingType = NVDRS_DWORD_TYPE;
 
-        status = NvAPI_DRS_GetSetting(hSession, hProfile, VRR_MODE_ID, &drsSetting);
-        if (status != NVAPI_OK)
+        NvAPI_Status status = NvAPI_DRS_GetSetting(hSession, hProfile, VRR_MODE_ID, &drsSetting);
+        if (status != NVAPI_OK) {
             PrintError2(status);
+        }
 
-        if (drsSetting.u32CurrentValue == VRR_MODE_DISABLED) {
-            if(doSwitch)
-                result = 1;
-            else
-                result = 0;
+        int result = 0;
+        if (drsSetting.u32CurrentValue == VRR_MODE_DISABLED && doSwitch) {
             drsSetting.u32CurrentValue = VRR_MODE_DEFAULT;
+            result = 1;
         }
-        else {
-            if (doSwitch)
-                result = 0;
-            else
-                result = 1;
+        else if (drsSetting.u32CurrentValue != VRR_MODE_DISABLED && doSwitch) {
             drsSetting.u32CurrentValue = VRR_MODE_DISABLED;
+            result = 0;
         }
 
-        if (doSwitch) {
-            status = NvAPI_DRS_SetSetting(hSession, hProfile, &drsSetting);
-            if (status != NVAPI_OK)
-                PrintError2(status);
-            // (5) Now we apply (or save) our changes to the system
-            status = NvAPI_DRS_SaveSettings(hSession);
-        }
-        
-        if (status != NVAPI_OK)
+        status = NvAPI_DRS_SetSetting(hSession, hProfile, &drsSetting);
+        if (status != NVAPI_OK) {
             PrintError2(status);
-        // (6) We clean up. This is analogous to doing a free()
-        NvAPI_DRS_DestroySession(hSession);
-        hSession = 0;
-        NvAPI_Unload();
+        }
+
+        status = NvAPI_DRS_SaveSettings(hSession);
+        if (status != NVAPI_OK) {
+            PrintError2(status);
+        }
+
+        FinalizeGsync(hSession);
 
         return result;
+    }
 
-	}
+    // Helper function to initialize G-Sync settings
+    void InitializeGsync(NvDRSSessionHandle* hSession, NvDRSProfileHandle* hProfile) {
+        NvAPI_Status status = NvAPI_Initialize();
+        if (status != NVAPI_OK) {
+            PrintError2(status);
+        }
+
+        status = NvAPI_DRS_CreateSession(hSession);
+        if (status != NVAPI_OK) {
+            PrintError2(status);
+        }
+
+        status = NvAPI_DRS_LoadSettings(*hSession);
+        if (status != NVAPI_OK) {
+            PrintError2(status);
+        }
+
+        status = NvAPI_DRS_GetBaseProfile(*hSession, hProfile);
+        if (status != NVAPI_OK) {
+            PrintError2(status);
+        }
+    }
+
+    // Helper function to finalize G-Sync settings
+    void FinalizeGsync(NvDRSSessionHandle hSession) {
+        NvAPI_DRS_DestroySession(hSession);
+        NvAPI_Unload();
+    }
+
+
 
     GsyncSwitchNVAPIWrapper int NVAPIWrapperSwitchVsync(bool doSwitch) {
         int result = 0;
